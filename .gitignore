@@ -1,0 +1,8 @@
+# macOS and editors
+.DS_Store
+.vscode/
+
+# Arduino build output
+build/
+*.hex
+*.elf

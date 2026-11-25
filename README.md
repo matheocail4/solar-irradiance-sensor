@@ -1,35 +1,43 @@
-# Projet MINUTO — Mesure de l'irradiance solaire
+# MINUTO: measuring solar irradiance with a low-cost sensor
 
-Projet réalisé dans le cadre du cursus IMT Atlantique (Bretagne-Pays de la Loire, École Mines-Télécom), groupe B24, rendu le 15/01/2025.
+Design and construction of a simple, low-cost solar sensor to measure solar irradiance (in W/m²) in Brest under different weather conditions.
 
-**Auteurs :** Aymane Ounzar, Alix Barraque (chef de projet), Nada Aleian, Mathéo Cail, Rémi Leluan, Hugo Bentata
+**Result:** 4 measurements over 3 days, between **279 ± 10 and 507 ± 18 W/m²**, with a full uncertainty analysis.
 
-## Objectif
+First-year team project at IMT Atlantique (Brest), group B24, delivered on 15 January 2025.
+Team: Aymane Ounzar, Alix Barraque (project lead), Nada Aleian, Mathéo Cail, Rémi Leluan, Hugo Bentata.
 
-Concevoir et construire, avec du matériel peu onéreux, un capteur solaire simple permettant de mesurer l'irradiance solaire (en W·m⁻²) à Brest dans différentes conditions météorologiques.
+## Principle
 
-## Principe
-
-L'irradiance est déduite de la relation :
+A brass block is exposed to the sun and its temperature rise is measured. The irradiance is the power received per unit area:
 
 ```
-F☉ = (m × C_T × ΔT) / (S × Δt)
+F = (m × C_T × ΔT) / (S × Δt)
 ```
 
-où `m` et `S` sont mesurés directement (masse et surface d'un bloc de laiton), et `C_T` (capacité thermique) ainsi que `ΔT/Δt` sont obtenus via :
+where `m` (622 g) and `S` (25 cm²) are the mass and exposed area of the brass block, `C_T` its specific heat capacity, and `ΔT/Δt` its heating rate. The temperature is read through a thermistor, so the measurement has three steps:
 
-1. **Étalonnage d'une thermistance** — pont de Wheatstone + carte Arduino + capteur TMP117, pour établir la relation ΔV = f(T).
-2. **Mesure de C_T** — chauffage du bloc de laiton par effet Joule (fil de NiCr), suivi de la variation de tension aux bornes de la thermistance.
-3. **Mesure de l'irradiance** — exposition du bloc au soleil, mesure de ΔV = f(t), puis conversion en irradiance grâce aux étapes précédentes.
+1. **Thermistor calibration**: a Wheatstone bridge read by an Arduino, next to a TMP117 reference temperature sensor, in an insulated box whose temperature is varied. This gives the relation between the bridge voltage and the temperature.
+2. **Heat capacity of the block**: the block is heated with a NiCr resistance wire (Joule heating) while the thermistor voltage is recorded. Result: C_T = 389 ± 10 J·kg⁻¹·K⁻¹.
+3. **Irradiance**: the block is exposed to the sun, the voltage is recorded over time (about 15 min, 30 min for the second measurement), then converted into irradiance using the two previous steps.
 
-## Résultats
+## Results
 
-4 mesures effectuées sur 3 jours (12/12/2025, 10/01/2025, 12/01/2025), donnant des valeurs d'irradiance comprises entre **279 W·m⁻²** et **507 W·m⁻²**.
+| Measurement | Date | Time | Irradiance (W/m²) |
+|---:|---|---|---:|
+| 1 | 12 Dec 2024 | 16:10 | 507 ± 18 |
+| 2 | 10 Jan 2025 | 11:02 | 308 ± 12 |
+| 3 | 12 Jan 2025 | 15:06 | 439 ± 15 |
+| 4 | 12 Jan 2025 | 15:28 | 279 ± 10 |
 
-Axes d'amélioration identifiés : prise en compte de l'albédo et des sources de réflexion (mer, bâtiments, nuages), suivi de la trajectoire du soleil pour corriger l'incidence, et isolation thermique plus performante que le polystyrène pour la mesure de C_T.
+Possible improvements identified in the report: account for albedo and reflections (sea, buildings, clouds), track the sun's position to correct the angle of incidence, and use better thermal insulation than polystyrene for the heat capacity measurement.
 
-## Contenu du dépôt
+## Contents
 
-- [`docs/Rapport_MINUTO.pdf`](docs/Rapport_MINUTO.pdf) — rapport complet (démarche, montages, calculs d'incertitude, résultats)
-- [`arduino/etalonnage_thermistance.ino`](arduino/etalonnage_thermistance.ino) — lecture de la tension (pont de Wheatstone) et de la température (capteur TMP117), utilisé pour l'étalonnage de la thermistance
-- [`arduino/mesure_dV_temps.ino`](arduino/mesure_dV_temps.ino) — mesure de ΔV en fonction du temps sur les pins A0/A1, utilisé pour la mesure de C_T et de l'irradiance
+- [`docs/Rapport_MINUTO.pdf`](docs/Rapport_MINUTO.pdf): full report in French (method, set-ups, uncertainty calculations, results)
+- [`arduino/etalonnage_thermistance.ino`](arduino/etalonnage_thermistance.ino): reads the bridge voltage and the TMP117 temperature, used for the thermistor calibration
+- [`arduino/mesure_dV_temps.ino`](arduino/mesure_dV_temps.ino): records the thermistor voltage over time (pins A0/A1, 12-bit ADC), used for the heat capacity and irradiance measurements
+
+## Tech
+
+Arduino (C++), Wheatstone bridge, TMP117 sensor, uncertainty propagation.
